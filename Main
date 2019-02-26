@@ -1,0 +1,257 @@
+#include "Servo.h"
+
+
+const int left11 = 13;//variable for DC motor rear left 
+const int left12 = 12;
+const int pwm1 =11;
+
+//const int left21 = 11; //variable for DC motor middle left
+//const int left22 = 10;
+//const int pwm2; 
+
+//const int left31 = 9; //variable for DC motor front left
+//const int left32 = 8;
+//const int pwm3; 
+
+const int right11 = 7; //variable for DC motor rear right
+const int right12 = 6;
+const int pwm4 = 10; 
+
+//const int right21 = 5; //variable for DC motor middle right
+//const int right22 = 4;
+//const int pwm5; 
+
+//const int right31 = 3; //variable for DC motor front right
+//const int right32 = 2; 
+//const int pwm6;
+
+// pins sonar sensors connect to
+const int sonarPin1 = 7; 
+const int sonarPin2 = 8;
+
+Servo tiller;
+int servoDWN; // servo in the down position
+int servoUP=0; // servo in the up position
+
+const int straight; //variable for length of crop row
+const int width; //variable for width of crop row
+const int reverse; //variable for reverse direction
+const int tRight; //variable to turn right
+const int tLeft; //variable to turn left
+int disForw; //Variable for distance travlled forward
+int disRev; //Nomad is programmed to reverse 0.5 meters 
+int curSpeed; //variable for current speed
+int rows;//variable to store number of rows of crops
+int cropRight;//variable to store distance to crops from right sonar sensor
+int cropLeft;//variable to store distance to crops from left sonar sensor
+
+
+
+void setup() {
+  // put your setup code here, to run once:
+
+pinMode(left11, OUTPUT); 
+pinMode(left12, OUTPUT); 
+//pinMode(left21, OUTPUT); 
+//pinMode(left22, OUTPUT);
+//pinMode(left31, OUTPUT); 
+//pinMode(left32, OUTPUT); 
+pinMode(right11, OUTPUT);
+pinMode(right12, OUTPUT);
+//pinMode(right21, OUTPUT);
+//pinMode(right22, OUTPUT);
+//pinMode(right31, OUTPUT);
+//pinMode(right32, OUTPUT);
+
+pinMode(sonarPin1, INPUT); 
+pinMode(sonarPin2, INPUT);
+
+tiller.attach();// determine pin for servo motor
+
+Serial.begin(9600); //This opens up a serial connection to shoot the results back to the PC console
+
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+
+//need to setup code to calculate the forward distance travelled
+
+pulseRate1 = pulseIn(sonarPin1, HIGH); //Pulse Width representation with a scale factor of 147 uS per Inch (from LV-MAX sonar data sheet)
+pulseRate2 = pulseIn(sonarPin2, HIGH);
+cropRight = pulseRate1 / 147; // 147 uS per inch
+cropLeft = pulseRate2 / 147;
+
+straight = 20; //set the length of the row crops
+
+//complete for 20 rows
+for (rows= 0; rows =< 20 ; rows++)
+{
+
+  
+  if(distForw < straight)
+  {
+
+   tiller.write(90); //tiller in weeding position
+ //All motors moving forward at half speed
+ digitalWrite(left11, HIGH);
+ digitalWrite(left12, LOW);
+ analogWrite(pwm1, 127); 
+  
+  //digitalWrite(left21, HIGH);
+  //digitalWrite(left22, LOW);
+  //analogWrite(pwm2, 127); 
+  
+  //digitalWrite(left31, HIGH);
+  //digitalWrite(left32, LOW);
+  //analogWrite(pwm3, 127);
+  
+  digitalWrite(right11, HIGH);
+  digitalWrite(right12, LOW);
+  analogWrite(pwm4, 127); 
+  
+  //digitalWrite(right21, HIGH);
+  //digitalWrite(right22, LOW);
+  //analogWrite(pwm5, 127);
+  
+  //digitalWrite(right31, HIGH);
+  //digitalWrite(right32, LOW);
+  //analogWrite(pwm5,127);
+
+  }
+
+//if the nomad gets to close to the crops 
+
+  else if (cropRight < 4 || cropLeft < 4)
+
+  {
+    //code to redirect onto course goes here 
+
+  if(cropRight<4)
+  {
+    digitalWrite(left11, HIGH);
+    digitalWrite(left12, LOW);
+    analogWrite(pwm1, 10)
+
+    digitalWrite(right11, HIGH);
+    digitalWrite(right12, LOW);
+    analogWrite(pwm4, 50);
+  }
+
+  else if(cropLeft<4) 
+  {
+     digitalWrite(left11, HIGH);
+    digitalWrite(left12, LOW);
+    analogWrite(pwm1, 50)
+
+    digitalWrite(right11, HIGH);
+    digitalWrite(right12, LOW);
+    analogWrite(pwm4, 10);
+  }
+     
+  }
+
+  else if (distForw >= straight)
+
+  {
+
+    tiller.write(0);//return tiller to upright position
+    //slow the nomad down
+    digitalWrite(left11, HIGH);
+    digitalWrite(left12, LOW);
+    analogWrite(pwm1, 20); 
+  
+    //digitalWrite(left21, HIGH);
+    //digitalWrite(left22, LOW);
+    //analogWrite(pwm2, 20); 
+  
+    //digitalWrite(left31, HIGH);
+    //digitalWrite(left32, LOW);
+    //analogWrite(pwm3, 20);
+  
+    digitalWrite(right11, HIGH);
+    digitalWrite(right12, LOW);
+    analogWrite(pwm4, 20); 
+  
+    //digitalWrite(right21, HIGH);
+    //digitalWrite(right22, LOW);
+    //analogWrite(pwm5, 20);
+  
+    //digitalWrite(right31, HIGH);
+    //digitalWrite(right32, LOW);
+    //analogWrite(pwm5, 20);
+
+    
+    delay(2000); //delay for 2 seconds
+
+    //cause the nomad to break
+    digitalWrite(left11, HIGH);
+    digitalWrite(left12, HIGH);
+  
+    //digitalWrite(left21, HIGH);
+    //digitalWrite(left22, HIGH);
+  
+    //digitalWrite(left31, HIGH);
+   // digitalWrite(left32, HIGH);
+  
+    digitalWrite(right11, HIGH);
+    digitalWrite(right12, HIGH);
+  
+   // digitalWrite(right21, HIGH);
+   // digitalWrite(right22, HIGH);
+  
+    //digitalWrite(right31, HIGH);
+    //digitalWrite(right32, HIGH);
+
+    delay(5000); //delay for 5 seconds
+
+
+  //write code to turn robot 180 degrees into next row crop
+  //Need to run experiments to determine speeds of DC motors that allow robot to turn 180 degrees
+  digitalWrite(left11, HIGH);
+  digitalWrite(left12, LOW);
+  analogWrite(pwm1, 10); 
+
+  digitalWrite(right11, HIGH);
+  digitalWrite(right12, LOW);
+  analogWrite(pwm4, 50);
+    
+  }
+
+  else if (curSpeed = 0 && distforw < straight) 
+
+  {
+
+    tiller.write(0);//tiller in upright position 
+    
+    //code to put nomad into reverse  
+    digitalWrite(left11, LOW);
+    digitalWrite(left12, HIGH);
+    analogWrite(pwm1, 50); 
+  
+    //digitalWrite(left21, LOW);
+    //digitalWrite(left22, HIGH;
+    //analogWrite(pwm2, 50); 
+  
+    //digitalWrite(left31, LOW);
+    //digitalWrite(left32, HIGH);
+    //analogWrite(pwm3, 50);
+  
+    digitalWrite(right11, LOW);
+    digitalWrite(right12, HIGH);
+    analogWrite(pwm4, 50); 
+  
+    //digitalWrite(right21, LOW);
+    //digitalWrite(right22, HIGH);
+    //analogWrite(pwm5, 50);
+  
+    //digitalWrite(right31, LOW);
+    //digitalWrite(right32, HIGH);
+    //analogWrite(pwm5, 50);
+  }
+
+}
+  
+  
+
+}

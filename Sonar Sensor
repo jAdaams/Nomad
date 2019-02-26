@@ -1,0 +1,60 @@
+//Feel free to use this code.
+//Please be respectful by acknowledging the author in the code if you use or modify it.
+//Author: Bruce Allen
+//Date: 23/07/09
+//Code was modified by Josh Adams Physics Student Kwantlen Polytechnic University 
+//2019-01-24
+
+//Digital pin 7 and pin 4 for reading in the pulse width fomr the two sonar sensors.
+
+
+const int sonarPin1 = 7;
+const int sonarPin2 = 4;
+
+//variables needed to store values.
+//Pulse rate reads the pulse from the sonar
+//cropDist is the distance to the sonar 
+
+long pulseRate, cropDist;
+
+void setup()
+
+{
+  //This opens up a serial connection to shoot the results back to the PC console
+  Serial.begin(9600);
+
+}
+
+void loop()
+{
+
+  pinMode(sonarPin1, INPUT);
+  //pinMode(sonarPin2, INPUT); 
+
+  //Used to read in the pulse that is being sent by the MaxSonar device.
+
+  //Pulse Width representation with a scale factor of 147 uS per Inch (from LV-MAX sonar data sheet)
+
+  pulseRate = pulseIn(sonarPin1, HIGH);
+  
+  //147uS per inch
+
+  cropDist = pulseRate / 147;
+
+  if (cropDist < 6) 
+   {
+    Serial.println("To close to crops, redirecting course"); //signal will communicate with DC motors 
+   }
+  else 
+  {
+
+  Serial.print("Distance to crops, ");
+  Serial.print(cropDist); 
+  Serial.print(" inches");
+  Serial.println(" ");
+  
+  }
+
+  delay(2000);
+
+}

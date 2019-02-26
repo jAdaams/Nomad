@@ -1,0 +1,56 @@
+
+//#include <SoftwareServo.h> 
+#include "Servo.h"
+//#include "Timer.h"
+
+Servo tiller;
+
+int servoDWN;
+int servoUP=0;
+const int button = 2;
+//Timer t;
+long startTime;
+long eTime = 20000;
+
+void setup() 
+{
+  // put your setup code here, to run once:
+
+tiller.attach(8);
+
+pinMode(button, INPUT);
+
+}
+
+void loop() 
+{
+  // put your main code here, to run repeatedly:
+
+  //int servoUP = 0;
+  //int servoDWN =-90; 
+
+ // if (mSpeed = 0)
+ // {
+   // tiller.write(0)
+ // }
+int buttonState;
+
+buttonState = digitalRead(button);
+
+if (buttonState == LOW)
+{
+   //for (servoUP = 0; servoUP <= 90; servoUP += 1) //{  goes from 0 degrees to 180 degrees
+    // in steps of 1 degree
+    tiller.write(90);             
+                           // waits 15ms for the servo to reach the position
+  }
+ if (buttonState == HIGH)
+ {
+  for (servoDWN = 90; servoDWN >= 0; servoDWN -= 1) //{  goes from 180 degrees to 0 degrees
+    tiller.write(servoDWN);              
+                          // waits 15ms for the servo to reach the position
+  }
+
+ 
+ }
+  
